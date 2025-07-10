@@ -10,11 +10,24 @@ async def webhook_handler(request: Request):
     try:
         data = await request.json()
         print("📩 Incoming Zepto webhook payload:", data, file=sys.stderr)
-        return {"status": "ok"}
 
-        subject = data.get("subject", data.get("event", "ZeptoMail Event"))
-        body = data.get("body", data.get("reason", "No message body provided"))
-        to_email = data.get("to") or data.get("recipient") or ""
+        subject = (
+            data.get("event_message", [{}])[0]
+            .get("email_info", {})
+            .get("subject", "ZeptoMail Event")
+        )
+        to_email = (
+            data.get("event_message", [{}])[0]
+            .get("event_data", [{}])[0]
+            .get("details", [{}])[0]
+            .get("bounced_recipient", "")
+        )
+        body = (
+            data.get("event_message", [{}])[0]
+            .get("event_data", [{}])[0]
+            .get("details", [{}])[0]
+            .get("diagnostic_message", "No diagnostic message provided")
+        )
 
         if not to_email:
             return {"error": "Missing recipient email in webhook"}
