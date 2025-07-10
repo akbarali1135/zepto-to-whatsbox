@@ -31,8 +31,8 @@ async def webhook_handler(request: Request):
             return {"error": "Missing recipient email in webhook"}
 
         # Hardcoded phone and name
-        phone = "8355086283"
-        name = "Admin Receiver"
+        phone = "8630656449"
+        name = "Divya"
 
         # WhatsApp API credentials
         whatsapp_api = os.environ.get("WHATSAPP_API_URL")
