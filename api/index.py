@@ -1,6 +1,7 @@
 import os
 import requests
 from fastapi import FastAPI, Request
+import sys
 
 app = FastAPI()
 
@@ -8,10 +9,12 @@ app = FastAPI()
 async def webhook_handler(request: Request):
     try:
         data = await request.json()
+        print("📩 Incoming Zepto webhook payload:", data, file=sys.stderr)
+        return {"status": "ok"}
 
-        subject = data.get("subject", "")
-        body = data.get("body", "")
-        to_email = data.get("to", "")
+        subject = data.get("subject", data.get("event", "ZeptoMail Event"))
+        body = data.get("body", data.get("reason", "No message body provided"))
+        to_email = data.get("to") or data.get("recipient") or ""
 
         if not to_email:
             return {"error": "Missing recipient email in webhook"}
